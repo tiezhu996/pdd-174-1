@@ -14,3 +14,16 @@ export interface DiffResult {
   removed: string[];
   modified: { name: string; oldValue: string; newValue: string }[];
 }
+
+export interface EnvGroup {
+  name: string;
+  description?: string;
+  variables: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EnvGroupsConfig {
+  version: string;
+  groups: Record<string, EnvGroup>;
+}

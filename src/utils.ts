@@ -1,6 +1,7 @@
 import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
-import { Snapshot } from "./types";
+import { Snapshot, EnvGroupsConfig } from "./types";
 
 export const CATEGORIES: Record<string, string[]> = {
   PATH: ["PATH", "HOME", "PWD", "OLDPWD", "CDPATH"],
@@ -127,4 +128,43 @@ export function readSnapshot(filePath: string): Snapshot {
 
 export function writeSnapshot(filePath: string, snapshot: Snapshot): void {
   fs.writeFileSync(filePath, JSON.stringify(snapshot, null, 2), "utf-8");
+}
+
+const CONFIG_DIR = path.join(os.homedir(), ".pdd-174");
+const GROUPS_FILE = path.join(CONFIG_DIR, "groups.json");
+
+export function getGroupsConfigPath(): string {
+  return GROUPS_FILE;
+}
+
+function createDefaultConfig(): EnvGroupsConfig {
+  return {
+    version: "1.0",
+    groups: {},
+  };
+}
+
+export function readGroupsConfig(): EnvGroupsConfig {
+  if (!fs.existsSync(GROUPS_FILE)) {
+    const config = createDefaultConfig();
+    writeGroupsConfig(config);
+    return config;
+  }
+  try {
+    const raw = fs.readFileSync(GROUPS_FILE, "utf-8");
+    const parsed = JSON.parse(raw) as EnvGroupsConfig;
+    if (!parsed.version || !parsed.groups) {
+      return createDefaultConfig();
+    }
+    return parsed;
+  } catch {
+    return createDefaultConfig();
+  }
+}
+
+export function writeGroupsConfig(config: EnvGroupsConfig): void {
+  if (!fs.existsSync(CONFIG_DIR)) {
+    fs.mkdirSync(CONFIG_DIR, { recursive: true });
+  }
+  fs.writeFileSync(GROUPS_FILE, JSON.stringify(config, null, 2), "utf-8");
 }
