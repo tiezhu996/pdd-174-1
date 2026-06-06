@@ -4,7 +4,7 @@
   "description": "CLI environment variable inspector with snapshot and diff support",
   "main": "dist/index.js",
   "bin": {
-    "pdd-174": "./bin/cli.js"
+    "pdd-174": "./dist/bin/cli.js"
   },
   "scripts": {
     "build": "tsc",
